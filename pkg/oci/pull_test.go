@@ -45,8 +45,6 @@ func TestPullFileFromRegistry(t *testing.T) {
 				dst,
 				ociURL,
 				WithInsecure(),
-				WithUsername("testuser"),
-				WithPassword("testpassword"),
 				WithTargetOS(platform.OS),
 				WithTargetArch(platform.Arch),
 				WithMediaType("text/plain"),

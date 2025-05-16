@@ -58,8 +58,7 @@ type GenericApplicationSpec struct {
 	EventWatcher []EventWatcherConfig `json:"eventWatcher"`
 	// Configuration for drift detection
 	DriftDetection *DriftDetection `json:"driftDetection"`
-	// List of the configuration for plugin
-	// This field is plugin-specific, so intentionally restrict the access for the actual value here and decode it on the SDK side.
+	// List of the plugin name
 	Plugins map[string]struct{} `json:"plugins"`
 }
 

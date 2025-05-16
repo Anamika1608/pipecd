@@ -9,10 +9,6 @@ metadata:
     zeroString1: ""
     zeroInt1: 0
     zeroFloat1: 0.0
-    booleanString1: "true"
-    booleanString2: true
-    booleanString3: "false"
-    booleanString4: false 
 spec:
   replicas: 2
   number: 1
@@ -57,10 +53,6 @@ metadata:
     zeroString2: ""
     zeroInt2: 0
     zeroFloat2: 0.0
-    booleanString1: true
-    booleanString2: "true"
-    booleanString3: false
-    booleanString4: "false"
 spec:
   replicas: 2
   number: 1.0

@@ -10,7 +10,6 @@ on:
     branches:
       - master
       - 'release-v*'
-      - 'feat/*'
 
 env:
   GO_VERSION: 1.24.1

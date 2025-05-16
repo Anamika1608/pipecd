@@ -40,7 +40,6 @@ const (
 	trafficRouteCanaryMetadataKey  = "canary-percentage"
 	canaryScaleMetadataKey         = "canary-scale"
 	currentListenersKey            = "current-listeners"
-	canaryTargetGroupArnKey        = "canary-target-group-arn"
 )
 
 type registerer interface {

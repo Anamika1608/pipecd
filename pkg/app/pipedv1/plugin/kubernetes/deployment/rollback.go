@@ -51,7 +51,7 @@ func (p *Plugin) executeK8sRollbackStage(ctx context.Context, input *sdk.Execute
 
 	// Because the loaded manifests are read-only
 	// we duplicate them to avoid updating the shared manifests data in cache.
-	manifests = provider.DeepCopyManifests(manifests)
+	// TODO: implement duplicateManifests function
 
 	// When addVariantLabelToSelector is true, ensure that all workloads
 	// have the variant label in their selector.

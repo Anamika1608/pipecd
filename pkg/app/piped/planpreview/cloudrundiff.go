@@ -66,7 +66,6 @@ func (b *builder) cloudrundiff(
 		newManifest,
 		diff.WithEquateEmpty(),
 		diff.WithCompareNumberAndNumericString(),
-		diff.WithCompareBooleanAndBooleanString(),
 	)
 	if err != nil {
 		fmt.Fprintf(buf, "failed to compare manifests (%v)\n", err)

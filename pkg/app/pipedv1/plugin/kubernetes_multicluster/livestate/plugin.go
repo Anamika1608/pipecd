@@ -126,14 +126,15 @@ func (p Plugin) GetLivestate(ctx context.Context, _ *sdk.ConfigNone, deployTarge
 	appLiveState := sdk.ApplicationLiveState{}
 	for _, ls := range liveStates {
 		appLiveState.Resources = append(appLiveState.Resources, ls.Resources...)
+		appLiveState.HealthStatus = sdk.ApplicationHealthStateUnknown // TODO: Implement health status calculation
 	}
 
 	appSyncState := sdk.ApplicationSyncState{}
 	for _, ss := range syncStates {
 		appSyncState.Reason = fmt.Sprintf("%s\n%s", appSyncState.Reason, ss.Reason)
 		appSyncState.ShortReason = fmt.Sprintf("%s\n%s", appSyncState.ShortReason, ss.ShortReason)
+		appSyncState.Status = sdk.ApplicationSyncStateOutOfSync // TODO: Implement health status calculation
 	}
-	appSyncState.Status = calculateSyncStatus(syncStates)
 
 	return &sdk.GetLivestateResponse{
 		LiveState: appLiveState,
@@ -151,7 +152,8 @@ func (p Plugin) makeAppLivestate(namespacedLiveResources, clusterScopedLiveResou
 	}
 
 	return sdk.ApplicationLiveState{
-		Resources: resourceStates,
+		Resources:    resourceStates,
+		HealthStatus: sdk.ApplicationHealthStateUnknown, // TODO: Implement health status calculation
 	}
 }
 
@@ -207,40 +209,6 @@ func calculateSyncState(diffResult *provider.DiffListResult, commit string, dt *
 		ShortReason: shortReason,
 		Reason:      b.String(),
 	}
-}
-
-// calculateSyncStatus returns the highest-priority sync status among the given states.
-// Priority: InvalidConfig > Unknown > OutOfSync > Synced.
-func calculateSyncStatus(states []sdk.ApplicationSyncState) sdk.ApplicationSyncStatus {
-	var (
-		hasInvalidConfig bool
-		hasUnknown       bool
-		hasOutOfSync     bool
-	)
-	for _, state := range states {
-		switch state.Status {
-		case sdk.ApplicationSyncStateInvalidConfig:
-			hasInvalidConfig = true
-		case sdk.ApplicationSyncStateUnknown:
-			hasUnknown = true
-		case sdk.ApplicationSyncStateOutOfSync:
-			hasOutOfSync = true
-		}
-	}
-
-	if hasInvalidConfig {
-		return sdk.ApplicationSyncStateInvalidConfig
-	}
-
-	if hasUnknown {
-		return sdk.ApplicationSyncStateUnknown
-	}
-
-	if hasOutOfSync {
-		return sdk.ApplicationSyncStateOutOfSync
-	}
-
-	return sdk.ApplicationSyncStateSynced
 }
 
 type loader interface {

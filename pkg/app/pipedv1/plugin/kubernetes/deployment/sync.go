@@ -17,7 +17,6 @@ package deployment
 import (
 	"cmp"
 	"context"
-	"encoding/json"
 	"errors"
 	"time"
 
@@ -37,19 +36,6 @@ func (p *Plugin) executeK8sSyncStage(ctx context.Context, input *sdk.ExecuteStag
 		return sdk.StageStatusFailure
 	}
 
-	var stageCfg kubeconfig.K8sSyncStageOptions
-	if len(input.Request.StageConfig) > 0 {
-		// TODO: this is a temporary solution to support the stage options specified under "with"
-		// When the stage options under "with" are empty, we cannot detect whether the stage is a quick sync stage or not.
-		// So we have to add a new field to the sdk.ExecuteStageRequest or sdk.Deployment to indicate that the deployment is a quick sync strategy or in a pipeline sync strategy.
-		if err := json.Unmarshal(input.Request.StageConfig, &stageCfg); err != nil {
-			lp.Errorf("Failed while unmarshalling stage config (%v)", err)
-			return sdk.StageStatusFailure
-		}
-	} else {
-		stageCfg = cfg.Spec.QuickSync
-	}
-
 	// TODO: find the way to hold the tool registry and loader in the plugin.
 	// Currently, we create them every time the stage is executed beucause we can't pass input.Client.toolRegistry to the plugin when starting the plugin.
 	toolRegistry := toolregistry.NewRegistry(input.Client.ToolRegistry())
@@ -65,7 +51,7 @@ func (p *Plugin) executeK8sSyncStage(ctx context.Context, input *sdk.ExecuteStag
 
 	// Because the loaded manifests are read-only
 	// we duplicate them to avoid updating the shared manifests data in cache.
-	manifests = provider.DeepCopyManifests(manifests)
+	// TODO: implement duplicateManifests function
 
 	// When addVariantLabelToSelector is true, ensure that all workloads
 	// have the variant label in their selector.
@@ -73,7 +59,8 @@ func (p *Plugin) executeK8sSyncStage(ctx context.Context, input *sdk.ExecuteStag
 		variantLabel   = cfg.Spec.VariantLabel.Key
 		primaryVariant = cfg.Spec.VariantLabel.PrimaryValue
 	)
-	if stageCfg.AddVariantLabelToSelector {
+	// TODO: treat the stage options specified under "with"
+	if cfg.Spec.QuickSync.AddVariantLabelToSelector {
 		workloads := findWorkloadManifests(manifests, cfg.Spec.Workloads)
 		for _, m := range workloads {
 			if err := ensureVariantSelectorInWorkload(m, variantLabel, primaryVariant); err != nil {
@@ -125,7 +112,8 @@ func (p *Plugin) executeK8sSyncStage(ctx context.Context, input *sdk.ExecuteStag
 		return sdk.StageStatusSuccess
 	}
 
-	if !stageCfg.Prune {
+	// TODO: treat the stage options specified under "with"
+	if !cfg.Spec.QuickSync.Prune {
 		lp.Info("Resource GC was skipped because sync.prune was not configured")
 		return sdk.StageStatusSuccess
 	}

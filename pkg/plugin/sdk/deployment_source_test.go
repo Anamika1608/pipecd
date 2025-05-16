@@ -83,14 +83,6 @@ func TestApplicationConfig_HasStage(t *testing.T) {
 			stageName: "stage1",
 			want:      false,
 		},
-		{
-			name: "pipeline is nil",
-			appConfig: &ApplicationConfig[any]{
-				commonSpec: &config.GenericApplicationSpec{},
-			},
-			stageName: "stage1",
-			want:      false,
-		},
 	}
 
 	for _, c := range cases {

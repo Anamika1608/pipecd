@@ -102,7 +102,8 @@ func (p Plugin) GetLivestate(ctx context.Context, _ *sdk.ConfigNone, deployTarge
 
 	return &sdk.GetLivestateResponse{
 		LiveState: sdk.ApplicationLiveState{
-			Resources: resourceStates,
+			Resources:    resourceStates,
+			HealthStatus: sdk.ApplicationHealthStateUnknown, // TODO: Implement health status calculation
 		},
 		SyncState: syncState,
 	}, nil
